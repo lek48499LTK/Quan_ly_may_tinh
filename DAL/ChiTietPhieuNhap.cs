@@ -1,0 +1,29 @@
+namespace DAL
+{
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
+
+    [Table("ChiTietPhieuNhap")]
+    public partial class ChiTietPhieuNhap
+    {
+        [Key]
+        public int MaCTPN { get; set; }
+
+        public int MaPhieuNhap { get; set; }
+
+        public int MaSanPham { get; set; }
+
+        public int SoLuong { get; set; }
+
+        public decimal DonGiaNhap { get; set; }
+
+        public decimal ThanhTien { get; set; }
+
+        public virtual PhieuNhap PhieuNhap { get; set; }
+
+        public virtual SanPham SanPham { get; set; }
+    }
+}
