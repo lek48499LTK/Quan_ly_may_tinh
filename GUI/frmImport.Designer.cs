@@ -75,7 +75,7 @@
             // 
             this.cboSupplier.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboSupplier.FormattingEnabled = true;
-            this.cboSupplier.Location = new System.Drawing.Point(135, 38);
+            this.cboSupplier.Location = new System.Drawing.Point(151, 40);
             this.cboSupplier.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cboSupplier.Name = "cboSupplier";
             this.cboSupplier.Size = new System.Drawing.Size(281, 28);
@@ -85,7 +85,7 @@
             // 
             this.cboProduct.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboProduct.FormattingEnabled = true;
-            this.cboProduct.Location = new System.Drawing.Point(135, 88);
+            this.cboProduct.Location = new System.Drawing.Point(151, 88);
             this.cboProduct.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cboProduct.Name = "cboProduct";
             this.cboProduct.Size = new System.Drawing.Size(393, 28);
@@ -94,7 +94,7 @@
             // 
             // numQuantity
             // 
-            this.numQuantity.Location = new System.Drawing.Point(135, 138);
+            this.numQuantity.Location = new System.Drawing.Point(151, 138);
             this.numQuantity.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.numQuantity.Minimum = new decimal(new int[] {
             1,
@@ -113,7 +113,7 @@
             // 
             // txtPrice
             // 
-            this.txtPrice.Location = new System.Drawing.Point(135, 188);
+            this.txtPrice.Location = new System.Drawing.Point(151, 188);
             this.txtPrice.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtPrice.Name = "txtPrice";
             this.txtPrice.Size = new System.Drawing.Size(168, 26);
@@ -131,7 +131,7 @@
             // 
             // btnAdd
             // 
-            this.btnAdd.Location = new System.Drawing.Point(672, 138);
+            this.btnAdd.Location = new System.Drawing.Point(681, 191);
             this.btnAdd.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(112, 38);
@@ -238,7 +238,7 @@
             // 
             // txtInvoiceNumber
             // 
-            this.txtInvoiceNumber.Location = new System.Drawing.Point(652, 88);
+            this.txtInvoiceNumber.Location = new System.Drawing.Point(681, 88);
             this.txtInvoiceNumber.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtInvoiceNumber.Name = "txtInvoiceNumber";
             this.txtInvoiceNumber.ReadOnly = true;
@@ -265,7 +265,7 @@
             // 
             // txtStaffName
             // 
-            this.txtStaffName.Location = new System.Drawing.Point(790, 134);
+            this.txtStaffName.Location = new System.Drawing.Point(681, 137);
             this.txtStaffName.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtStaffName.Name = "txtStaffName";
             this.txtStaffName.ReadOnly = true;

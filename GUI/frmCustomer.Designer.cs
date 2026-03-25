@@ -110,36 +110,36 @@ namespace GUI
             // 
             // btnClose
             // 
-            this.btnClose.Location = new System.Drawing.Point(802, 227);
+            this.btnClose.Location = new System.Drawing.Point(802, 231);
             this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(94, 26);
+            this.btnClose.Size = new System.Drawing.Size(94, 54);
             this.btnClose.TabIndex = 8;
-            this.btnClose.Text = "Thoát";
+            this.btnClose.Text = "f";
             this.btnClose.UseVisualStyleBackColor = true;
             // 
             // btnNhapLai
             // 
             this.btnNhapLai.Location = new System.Drawing.Point(802, 163);
             this.btnNhapLai.Name = "btnNhapLai";
-            this.btnNhapLai.Size = new System.Drawing.Size(94, 26);
+            this.btnNhapLai.Size = new System.Drawing.Size(94, 54);
             this.btnNhapLai.TabIndex = 7;
             this.btnNhapLai.Text = "Nhập Lại";
             this.btnNhapLai.UseVisualStyleBackColor = true;
             // 
             // btnSua
             // 
-            this.btnSua.Location = new System.Drawing.Point(802, 103);
+            this.btnSua.Location = new System.Drawing.Point(802, 91);
             this.btnSua.Name = "btnSua";
-            this.btnSua.Size = new System.Drawing.Size(94, 26);
+            this.btnSua.Size = new System.Drawing.Size(94, 54);
             this.btnSua.TabIndex = 6;
             this.btnSua.Text = "Sửa";
             this.btnSua.UseVisualStyleBackColor = true;
             // 
             // btnThem
             // 
-            this.btnThem.Location = new System.Drawing.Point(802, 49);
+            this.btnThem.Location = new System.Drawing.Point(802, 26);
             this.btnThem.Name = "btnThem";
-            this.btnThem.Size = new System.Drawing.Size(94, 31);
+            this.btnThem.Size = new System.Drawing.Size(94, 54);
             this.btnThem.TabIndex = 5;
             this.btnThem.Text = "Thêm";
             this.btnThem.UseVisualStyleBackColor = true;

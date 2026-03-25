@@ -91,10 +91,10 @@ namespace GUI
             // 
             // btnLuuThayDoi
             // 
-            this.btnLuuThayDoi.Location = new System.Drawing.Point(141, 488);
+            this.btnLuuThayDoi.Location = new System.Drawing.Point(141, 473);
             this.btnLuuThayDoi.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnLuuThayDoi.Name = "btnLuuThayDoi";
-            this.btnLuuThayDoi.Size = new System.Drawing.Size(124, 29);
+            this.btnLuuThayDoi.Size = new System.Drawing.Size(124, 44);
             this.btnLuuThayDoi.TabIndex = 6;
             this.btnLuuThayDoi.Text = "Lưu thay đổi";
             this.btnLuuThayDoi.UseVisualStyleBackColor = true;
@@ -142,20 +142,20 @@ namespace GUI
             // 
             // btnThoat
             // 
-            this.btnThoat.Location = new System.Drawing.Point(638, 488);
+            this.btnThoat.Location = new System.Drawing.Point(638, 473);
             this.btnThoat.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnThoat.Name = "btnThoat";
-            this.btnThoat.Size = new System.Drawing.Size(84, 29);
+            this.btnThoat.Size = new System.Drawing.Size(84, 44);
             this.btnThoat.TabIndex = 8;
             this.btnThoat.Text = "Thoát";
             this.btnThoat.UseVisualStyleBackColor = true;
             // 
             // btnThayDoiMatKhau
             // 
-            this.btnThayDoiMatKhau.Location = new System.Drawing.Point(376, 488);
+            this.btnThayDoiMatKhau.Location = new System.Drawing.Point(379, 473);
             this.btnThayDoiMatKhau.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnThayDoiMatKhau.Name = "btnThayDoiMatKhau";
-            this.btnThayDoiMatKhau.Size = new System.Drawing.Size(165, 29);
+            this.btnThayDoiMatKhau.Size = new System.Drawing.Size(165, 44);
             this.btnThayDoiMatKhau.TabIndex = 6;
             this.btnThayDoiMatKhau.Text = "Thay đổi mật khẩu";
             this.btnThayDoiMatKhau.UseVisualStyleBackColor = true;
@@ -165,7 +165,7 @@ namespace GUI
             this.chkShowPassword.AutoSize = true;
             this.chkShowPassword.Location = new System.Drawing.Point(470, 390);
             this.chkShowPassword.Name = "chkShowPassword";
-            this.chkShowPassword.Size = new System.Drawing.Size(130, 24);
+            this.chkShowPassword.Size = new System.Drawing.Size(138, 24);
             this.chkShowPassword.TabIndex = 9;
             this.chkShowPassword.Text = "Hiện mật khẩu";
             this.chkShowPassword.UseVisualStyleBackColor = true;
