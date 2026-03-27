@@ -1,33 +1,20 @@
-﻿using System;
+﻿using BUS;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using DAL;
-using BUS;
 
 namespace GUI
 {
     public partial class frmSales : Form
     {
-        private List<SaleDetail> cart;
-        private decimal totalAmount = 0;
-        private QLMayTinhDB dbContext;
-
-        public class SaleDetail
-        {
-            public int MaSanPham { get; set; }
-            public string TenSanPham { get; set; }
-            public int SoLuong { get; set; }
-            public decimal DonGiaBan { get; set; }
-            public decimal GiamGia { get; set; }
-            public decimal ThanhTien { get; set; }
-        }
+        private readonly SalesBUS _salesBUS = new SalesBUS();
+        private readonly List<SalesBUS.SaleItemDto> _cart = new List<SalesBUS.SaleItemDto>();
+        private decimal _totalAmount = 0;
 
         public frmSales()
         {
             InitializeComponent();
-            dbContext = new QLMayTinhDB();
-            cart = new List<SaleDetail>();
             InitializeDataGridView();
         }
 
@@ -49,7 +36,7 @@ namespace GUI
                 Name = "TenSanPham",
                 HeaderText = "Tên sản phẩm",
                 DataPropertyName = "TenSanPham",
-                Width = 300
+                Width = 230
             });
 
             dgvCart.Columns.Add(new DataGridViewTextBoxColumn
@@ -57,7 +44,7 @@ namespace GUI
                 Name = "SoLuong",
                 HeaderText = "Số lượng",
                 DataPropertyName = "SoLuong",
-                Width = 100
+                Width = 80
             });
 
             dgvCart.Columns.Add(new DataGridViewTextBoxColumn
@@ -65,7 +52,7 @@ namespace GUI
                 Name = "DonGiaBan",
                 HeaderText = "Đơn giá",
                 DataPropertyName = "DonGiaBan",
-                Width = 150,
+                Width = 110,
                 DefaultCellStyle = new DataGridViewCellStyle { Format = "N0" }
             });
 
@@ -74,7 +61,7 @@ namespace GUI
                 Name = "GiamGia",
                 HeaderText = "Giảm giá",
                 DataPropertyName = "GiamGia",
-                Width = 100,
+                Width = 90,
                 DefaultCellStyle = new DataGridViewCellStyle { Format = "N0" }
             });
 
@@ -83,86 +70,56 @@ namespace GUI
                 Name = "ThanhTien",
                 HeaderText = "Thành tiền",
                 DataPropertyName = "ThanhTien",
-                Width = 150,
+                Width = 120,
                 DefaultCellStyle = new DataGridViewCellStyle { Format = "N0" }
             });
-
-            dgvCart.DataSource = null;
-        }
-
-        private void RefreshGrid()
-        {
-            dgvCart.DataSource = null;
-            dgvCart.DataSource = cart;
         }
 
         private void frmSales_Load(object sender, EventArgs e)
         {
-            LoadCustomers();
-            LoadProducts();
-            GenerateInvoiceNumber();
-            dtpSaleDate.Value = DateTime.Now;
-            txtStaffName.Text = CurrentUser.HoTen;
-            txtDiscount.Text = "0";
+            try
+            {
+                LoadCustomers();
+                LoadProducts();
+                ResetForm();
+                txtStaffName.Text = CurrentUser.HoTen;
+                txtDiscount.Text = "0";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi tải dữ liệu: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void LoadCustomers()
         {
-            try
-            {
-                var customers = dbContext.KhachHangs.ToList();
-                cboCustomer.DataSource = customers;
-                cboCustomer.DisplayMember = "HoTen";
-                cboCustomer.ValueMember = "MaKhachHang";
-
-                // Thêm option khách lẻ
-                cboCustomer.Items.Insert(0, new { MaKhachHang = 0, HoTen = "Khách lẻ" });
-                cboCustomer.SelectedIndex = 0;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi tải danh sách khách hàng: " + ex.Message);
-            }
+            var customers = _salesBUS.GetCustomersForSale();
+            cboCustomer.DataSource = customers;
+            cboCustomer.DisplayMember = "HoTen";
+            cboCustomer.ValueMember = "MaKhachHang";
+            cboCustomer.SelectedIndex = 0;
         }
 
         private void LoadProducts()
         {
-            try
-            {
-                var products = dbContext.SanPhams.Where(p => p.SoLuongTon > 0).ToList();
-                cboProduct.DataSource = products;
-                cboProduct.DisplayMember = "TenSanPham";
-                cboProduct.ValueMember = "MaSanPham";
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi tải danh sách sản phẩm: " + ex.Message);
-            }
+            var products = _salesBUS.GetAvailableProducts();
+            cboProduct.DataSource = products;
+            cboProduct.DisplayMember = "TenSanPham";
+            cboProduct.ValueMember = "MaSanPham";
+            cboProduct.SelectedIndex = -1;
         }
 
         private void cboProduct_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cboProduct.SelectedValue != null && cboProduct.SelectedValue is int)
+            int productId;
+            if (TryGetSelectedIntValue(cboProduct, out productId))
             {
-                int productId = (int)cboProduct.SelectedValue;
-                LoadProductPrice(productId);
-            }
-        }
-
-        private void LoadProductPrice(int productId)
-        {
-            try
-            {
-                var product = dbContext.SanPhams.Find(productId);
+                var product = _salesBUS.GetProductById(productId);
                 if (product != null)
                 {
                     txtUnitPrice.Text = product.GiaBan.ToString("N0");
                     CalculateSubTotal();
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi tải giá sản phẩm: " + ex.Message);
             }
         }
 
@@ -176,15 +133,24 @@ namespace GUI
             CalculateSubTotal();
         }
 
+        private void txtAmountPaid_TextChanged(object sender, EventArgs e)
+        {
+            CalculateChange();
+        }
+
         private void CalculateSubTotal()
         {
-            if (decimal.TryParse(txtUnitPrice.Text.Replace(",", ""), out decimal price) &&
-                numQuantity.Value > 0)
+            decimal price;
+            decimal discount;
+            if (TryParseDecimal(txtUnitPrice.Text, out price) && numQuantity.Value > 0)
             {
-                decimal discount = decimal.TryParse(txtDiscount.Text.Replace(",", ""), out decimal d) ? d : 0;
-                decimal total = price * numQuantity.Value;
-                decimal subTotal = total - discount;
-                txtSubTotal.Text = subTotal.ToString("N0");
+                if (!TryParseDecimal(txtDiscount.Text, out discount))
+                {
+                    discount = 0;
+                }
+
+                var subTotal = (price * numQuantity.Value) - discount;
+                txtSubTotal.Text = Math.Max(subTotal, 0).ToString("N0");
             }
             else
             {
@@ -194,106 +160,176 @@ namespace GUI
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            if (cboProduct.SelectedValue == null)
+            int productId;
+            if (!TryGetSelectedIntValue(cboProduct, out productId))
             {
-                MessageBox.Show("Vui lòng chọn sản phẩm!", "Thông báo",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng chọn sản phẩm!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (numQuantity.Value <= 0)
             {
-                MessageBox.Show("Số lượng phải lớn hơn 0!", "Thông báo",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Số lượng phải lớn hơn 0!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            int productId = (int)cboProduct.SelectedValue;
-            var product = dbContext.SanPhams.Find(productId);
+            decimal price;
+            if (!TryParseDecimal(txtUnitPrice.Text, out price) || price <= 0)
+            {
+                MessageBox.Show("Đơn giá không hợp lệ!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
+            decimal discount;
+            if (!TryParseDecimal(txtDiscount.Text, out discount))
+            {
+                discount = 0;
+            }
+
+            if (discount < 0)
+            {
+                MessageBox.Show("Giảm giá không hợp lệ!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var product = _salesBUS.GetProductById(productId);
             if (product == null)
             {
-                MessageBox.Show("Sản phẩm không tồn tại!", "Thông báo",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (product.SoLuongTon < numQuantity.Value)
-            {
-                MessageBox.Show($"Sản phẩm chỉ còn {product.SoLuongTon} sản phẩm trong kho!",
-                    "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (!decimal.TryParse(txtUnitPrice.Text.Replace(",", ""), out decimal price) || price <= 0)
-            {
-                MessageBox.Show("Đơn giá không hợp lệ!", "Thông báo",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Sản phẩm không tồn tại!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             int quantity = (int)numQuantity.Value;
-            decimal discount = decimal.TryParse(txtDiscount.Text.Replace(",", ""), out decimal d) ? d : 0;
-            decimal total = price * quantity;
-            decimal subTotal = total - discount;
+            var existing = _cart.FirstOrDefault(x => x.MaSanPham == productId);
+            int totalRequestedQuantity = (existing != null ? existing.SoLuong : 0) + quantity;
 
-            // Kiểm tra sản phẩm đã có trong giỏ chưa
-            var existing = cart.FirstOrDefault(x => x.MaSanPham == productId);
+            if (product.SoLuongTon < totalRequestedQuantity)
+            {
+                MessageBox.Show(
+                    string.Format("Sản phẩm chỉ còn {0} sản phẩm trong kho!", product.SoLuongTon),
+                    "Thông báo",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (discount > price * quantity)
+            {
+                MessageBox.Show("Giảm giá không được lớn hơn thành tiền!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (existing != null)
             {
                 existing.SoLuong += quantity;
+                existing.GiamGia += discount;
+                existing.DonGiaBan = price;
                 existing.ThanhTien = (existing.DonGiaBan * existing.SoLuong) - existing.GiamGia;
             }
             else
             {
-                cart.Add(new SaleDetail
+                _cart.Add(new SalesBUS.SaleItemDto
                 {
                     MaSanPham = productId,
                     TenSanPham = product.TenSanPham,
                     SoLuong = quantity,
                     DonGiaBan = price,
                     GiamGia = discount,
-                    ThanhTien = subTotal
+                    ThanhTien = (price * quantity) - discount
                 });
             }
 
-            UpdateTotalAmount();
             RefreshGrid();
+            UpdateTotalAmount();
             ClearInputFields();
         }
 
         private void btnRemove_Click(object sender, EventArgs e)
         {
-            if (dgvCart.CurrentRow != null)
+            if (dgvCart.CurrentRow == null)
             {
-                var detail = dgvCart.CurrentRow.DataBoundItem as SaleDetail;
-                if (detail != null)
-                {
-                    cart.Remove(detail);
-                    UpdateTotalAmount();
-                    RefreshGrid();
-                }
+                return;
             }
+
+            var detail = dgvCart.CurrentRow.DataBoundItem as SalesBUS.SaleItemDto;
+            if (detail == null)
+            {
+                return;
+            }
+
+            _cart.Remove(detail);
+            RefreshGrid();
+            UpdateTotalAmount();
+        }
+
+        private void btnCheckout_Click(object sender, EventArgs e)
+        {
+            decimal amountPaid;
+            if (!TryParseDecimal(txtAmountPaid.Text, out amountPaid))
+            {
+                MessageBox.Show("Vui lòng nhập số tiền khách trả hợp lệ!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int customerId;
+            int? selectedCustomerId = null;
+            if (TryGetSelectedIntValue(cboCustomer, out customerId) && customerId > 0)
+            {
+                selectedCustomerId = customerId;
+            }
+
+            var result = _salesBUS.SaveSale(dtpSaleDate.Value, selectedCustomerId, CurrentUser.MaNguoiDung, amountPaid, _cart);
+            if (!result.Success)
+            {
+                MessageBox.Show(result.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            MessageBox.Show(
+                string.Format("{0}\nMã hóa đơn: {1}\nTổng tiền: {2:N0} VNĐ\nKhách trả: {3:N0} VNĐ\nTiền thừa: {4:N0} VNĐ",
+                    result.Message,
+                    result.Id,
+                    _totalAmount,
+                    amountPaid,
+                    amountPaid - _totalAmount),
+                "Thông báo",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+
+            LoadProducts();
+            ResetForm();
+        }
+
+        private void btnPrint_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Chức năng in hóa đơn đang được phát triển!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void RefreshGrid()
+        {
+            dgvCart.DataSource = null;
+            dgvCart.DataSource = _cart.ToList();
         }
 
         private void UpdateTotalAmount()
         {
-            totalAmount = cart.Sum(x => x.ThanhTien);
-            txtTotal.Text = totalAmount.ToString("N0");
-            CalculateChange();
-        }
-
-        private void txtAmountPaid_TextChanged(object sender, EventArgs e)
-        {
+            _totalAmount = _cart.Sum(x => x.ThanhTien);
+            txtTotal.Text = _totalAmount.ToString("N0");
             CalculateChange();
         }
 
         private void CalculateChange()
         {
-            if (decimal.TryParse(txtAmountPaid.Text.Replace(",", ""), out decimal amountPaid))
+            decimal amountPaid;
+            if (TryParseDecimal(txtAmountPaid.Text, out amountPaid))
             {
-                decimal change = amountPaid - totalAmount;
-                txtChange.Text = change >= 0 ? change.ToString("N0") : "0";
+                var change = amountPaid - _totalAmount;
+                txtChange.Text = (change >= 0 ? change : 0).ToString("N0");
             }
             else
             {
@@ -303,126 +339,45 @@ namespace GUI
 
         private void ClearInputFields()
         {
+            cboProduct.SelectedIndex = -1;
             numQuantity.Value = 1;
             txtUnitPrice.Clear();
             txtDiscount.Text = "0";
             txtSubTotal.Clear();
-            if (cboProduct.Items.Count > 0)
-                cboProduct.SelectedIndex = -1;
-        }
-
-        private void GenerateInvoiceNumber()
-        {
-            txtInvoiceNumber.Text = "HD" + DateTime.Now.ToString("yyyyMMddHHmmss");
-        }
-
-        private void btnCheckout_Click(object sender, EventArgs e)
-        {
-            if (cart.Count == 0)
-            {
-                MessageBox.Show("Chưa có sản phẩm nào trong giỏ hàng!", "Thông báo",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (!decimal.TryParse(txtAmountPaid.Text.Replace(",", ""), out decimal amountPaid) || amountPaid < totalAmount)
-            {
-                MessageBox.Show($"Số tiền khách trả không đủ!\nTổng tiền: {totalAmount:N0} VNĐ",
-                    "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            try
-            {
-                // Tạo hóa đơn
-                var hoaDon = new HoaDon
-                {
-                    NgayLap = dtpSaleDate.Value,
-                    MaKhachHang = GetCustomerId(),
-                    MaNguoiDung = CurrentUser.MaNguoiDung,
-                    TongTien = totalAmount,
-                    GiamGia = cart.Sum(x => x.GiamGia),
-                    ThanhToan = totalAmount
-                };
-
-                dbContext.HoaDons.Add(hoaDon);
-                dbContext.SaveChanges();
-
-                // Thêm chi tiết hóa đơn và cập nhật tồn kho
-                foreach (var detail in cart)
-                {
-                    var chiTiet = new ChiTietHoaDon
-                    {
-                        MaHoaDon = hoaDon.MaHoaDon,
-                        MaSanPham = detail.MaSanPham,
-                        SoLuong = detail.SoLuong,
-                        DonGiaBan = detail.DonGiaBan,
-                        ThanhTien = detail.ThanhTien
-                    };
-
-                    dbContext.ChiTietHoaDons.Add(chiTiet);
-
-                    // Cập nhật số lượng tồn kho
-                    var product = dbContext.SanPhams.Find(detail.MaSanPham);
-                    if (product != null)
-                    {
-                        product.SoLuongTon -= detail.SoLuong;
-                    }
-                }
-
-                dbContext.SaveChanges();
-
-                MessageBox.Show($"Thanh toán thành công!\nMã hóa đơn: {hoaDon.MaHoaDon}\nTổng tiền: {totalAmount:N0} VNĐ\nKhách trả: {amountPaid:N0} VNĐ\nTiền thừa: {(amountPaid - totalAmount):N0} VNĐ",
-                    "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                ResetForm();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi khi thanh toán: " + ex.Message, "Lỗi",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private int? GetCustomerId()
-        {
-            if (cboCustomer.SelectedValue != null)
-            {
-                var selected = cboCustomer.SelectedItem;
-                var property = selected.GetType().GetProperty("MaKhachHang");
-                if (property != null)
-                {
-                    int id = (int)property.GetValue(selected);
-                    return id == 0 ? (int?)null : id;
-                }
-                return (int?)cboCustomer.SelectedValue;
-            }
-            return null;
         }
 
         private void ResetForm()
         {
-            cart.Clear();
-            totalAmount = 0;
+            _cart.Clear();
+            _totalAmount = 0;
             RefreshGrid();
-            GenerateInvoiceNumber();
             dtpSaleDate.Value = DateTime.Now;
-            cboCustomer.SelectedIndex = 0;
+            txtInvoiceNumber.Text = "HD" + DateTime.Now.ToString("yyyyMMddHHmmss");
+            if (cboCustomer.DataSource != null)
+            {
+                cboCustomer.SelectedIndex = 0;
+            }
             txtAmountPaid.Clear();
-            txtTotal.Clear();
-            txtChange.Clear();
+            txtTotal.Text = "0";
+            txtChange.Text = "0";
             ClearInputFields();
         }
 
-        private void btnPrint_Click(object sender, EventArgs e)
+        private static bool TryParseDecimal(string value, out decimal result)
         {
-            MessageBox.Show("Chức năng in hóa đơn đang được phát triển!", "Thông báo",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            var normalized = (value ?? string.Empty).Replace(",", string.Empty).Trim();
+            return decimal.TryParse(normalized, out result);
         }
 
-        private void btnCancel_Click(object sender, EventArgs e)
+        private static bool TryGetSelectedIntValue(ComboBox comboBox, out int value)
         {
-            this.Close();
+            value = 0;
+            if (comboBox.SelectedValue == null)
+            {
+                return false;
+            }
+
+            return int.TryParse(comboBox.SelectedValue.ToString(), out value);
         }
     }
 }

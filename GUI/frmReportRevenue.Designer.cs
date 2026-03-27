@@ -6,7 +6,6 @@
         private System.Windows.Forms.DateTimePicker dtpFromDate;
         private System.Windows.Forms.DateTimePicker dtpToDate;
         private System.Windows.Forms.Button btnViewReport;
-        private System.Windows.Forms.Button btnExportExcel;
         private System.Windows.Forms.DataGridView dgvReport;
         private System.Windows.Forms.Label lblFromDate;
         private System.Windows.Forms.Label lblToDate;
@@ -31,7 +30,6 @@
             this.dtpFromDate = new System.Windows.Forms.DateTimePicker();
             this.dtpToDate = new System.Windows.Forms.DateTimePicker();
             this.btnViewReport = new System.Windows.Forms.Button();
-            this.btnExportExcel = new System.Windows.Forms.Button();
             this.dgvReport = new System.Windows.Forms.DataGridView();
             this.lblFromDate = new System.Windows.Forms.Label();
             this.lblToDate = new System.Windows.Forms.Label();
@@ -73,17 +71,6 @@
             this.btnViewReport.Text = "Xem báo cáo";
             this.btnViewReport.UseVisualStyleBackColor = true;
             this.btnViewReport.Click += new System.EventHandler(this.btnViewReport_Click);
-            // 
-            // btnExportExcel
-            // 
-            this.btnExportExcel.Location = new System.Drawing.Point(281, 62);
-            this.btnExportExcel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.btnExportExcel.Name = "btnExportExcel";
-            this.btnExportExcel.Size = new System.Drawing.Size(112, 38);
-            this.btnExportExcel.TabIndex = 3;
-            this.btnExportExcel.Text = "Xuất Excel";
-            this.btnExportExcel.UseVisualStyleBackColor = true;
-            this.btnExportExcel.Click += new System.EventHandler(this.btnExportExcel_Click);
             // 
             // dgvReport
             // 
@@ -182,7 +169,6 @@
             this.Controls.Add(this.lblToDate);
             this.Controls.Add(this.lblFromDate);
             this.Controls.Add(this.dgvReport);
-            this.Controls.Add(this.btnExportExcel);
             this.Controls.Add(this.btnViewReport);
             this.Controls.Add(this.dtpToDate);
             this.Controls.Add(this.dtpFromDate);

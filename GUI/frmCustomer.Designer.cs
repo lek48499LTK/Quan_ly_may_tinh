@@ -114,7 +114,7 @@ namespace GUI
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(94, 54);
             this.btnClose.TabIndex = 8;
-            this.btnClose.Text = "f";
+            this.btnClose.Text = "Thoát";
             this.btnClose.UseVisualStyleBackColor = true;
             // 
             // btnNhapLai
