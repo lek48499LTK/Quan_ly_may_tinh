@@ -16,7 +16,6 @@
         private System.Windows.Forms.Button btnAdd;
         private System.Windows.Forms.Button btnRemove;
         private System.Windows.Forms.Button btnCheckout;
-        private System.Windows.Forms.Button btnPrint;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Label lblCustomer;
         private System.Windows.Forms.Label lblProduct;
@@ -58,7 +57,6 @@
             this.btnAdd = new System.Windows.Forms.Button();
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnCheckout = new System.Windows.Forms.Button();
-            this.btnPrint = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.lblCustomer = new System.Windows.Forms.Label();
             this.lblProduct = new System.Windows.Forms.Label();
@@ -186,7 +184,7 @@
             // 
             // btnAdd
             // 
-            this.btnAdd.Location = new System.Drawing.Point(652, 126);
+            this.btnAdd.Location = new System.Drawing.Point(639, 188);
             this.btnAdd.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(112, 43);
@@ -197,7 +195,7 @@
             // 
             // btnRemove
             // 
-            this.btnRemove.Location = new System.Drawing.Point(545, 704);
+            this.btnRemove.Location = new System.Drawing.Point(329, 704);
             this.btnRemove.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.Size = new System.Drawing.Size(112, 38);
@@ -208,7 +206,7 @@
             // 
             // btnCheckout
             // 
-            this.btnCheckout.Location = new System.Drawing.Point(314, 704);
+            this.btnCheckout.Location = new System.Drawing.Point(586, 704);
             this.btnCheckout.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnCheckout.Name = "btnCheckout";
             this.btnCheckout.Size = new System.Drawing.Size(112, 38);
@@ -216,17 +214,6 @@
             this.btnCheckout.Text = "Thanh toán";
             this.btnCheckout.UseVisualStyleBackColor = true;
             this.btnCheckout.Click += new System.EventHandler(this.btnCheckout_Click);
-            // 
-            // btnPrint
-            // 
-            this.btnPrint.Location = new System.Drawing.Point(426, 704);
-            this.btnPrint.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.btnPrint.Name = "btnPrint";
-            this.btnPrint.Size = new System.Drawing.Size(112, 38);
-            this.btnPrint.TabIndex = 13;
-            this.btnPrint.Text = "In hóa đơn";
-            this.btnPrint.UseVisualStyleBackColor = true;
-            this.btnPrint.Click += new System.EventHandler(this.btnPrint_Click);
             // 
             // btnCancel
             // 
@@ -367,7 +354,7 @@
             // 
             // txtStaffName
             // 
-            this.txtStaffName.Location = new System.Drawing.Point(769, 137);
+            this.txtStaffName.Location = new System.Drawing.Point(652, 137);
             this.txtStaffName.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtStaffName.Name = "txtStaffName";
             this.txtStaffName.ReadOnly = true;
@@ -395,7 +382,6 @@
             this.Controls.Add(this.lblProduct);
             this.Controls.Add(this.lblCustomer);
             this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnPrint);
             this.Controls.Add(this.btnCheckout);
             this.Controls.Add(this.btnRemove);
             this.Controls.Add(this.btnAdd);
